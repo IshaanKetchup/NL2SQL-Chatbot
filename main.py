@@ -4,6 +4,7 @@ from google import genai
 from fastapi.middleware.cors import CORSMiddleware
 from groq import Groq
 import os
+from fastapi.responses import HTMLResponse
 
 # RUN IT USING uvicorn main:app --reload
 
@@ -55,6 +56,72 @@ current_schema = [
     {"table": "users", "columns": ["id", "name", "email"]},
     {"table": "orders", "columns": ["id", "user_id", "total", "date"]},
 ]
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_spiderman():
+    """
+    Serve the htrmldud.html file when the website loads.
+    This is the root endpoint.
+    """
+    try:
+        # Read the HTML file
+        with open("htrmldud.html", "r", encoding="utf-8") as file:
+            html_content = file.read()
+        return HTMLResponse(content=html_content, status_code=200)
+    except FileNotFoundError:
+        # If file doesn't exist, return a simple message with instructions
+        error_html = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Spiderman Page Not Found</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    text-align: center;
+                    padding: 50px;
+                    background-color: #f0f0f0;
+                }
+                .container {
+                    background: white;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                    max-width: 600px;
+                    margin: 0 auto;
+                }
+                h1 {
+                    color: #ff0000;
+                }
+                code {
+                    background: #f5f5f5;
+                    padding: 5px;
+                    border-radius: 3px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>🕷️ Spiderman Page Not Found</h1>
+                <p>The <code>spiderman.html</code> file was not found in the current directory.</p>
+                <p>Please make sure:</p>
+                <ol style="text-align: left; display: inline-block;">
+                    <li>The <code>spiderman.html</code> file exists in the same directory as this Python file</li>
+                    <li>You've spelled the filename correctly</li>
+                    <li>You're running the server from the correct directory</li>
+                </ol>
+                <p>Current directory: <code>""" + os.getcwd() + """</code></p>
+                <p>API endpoints are still available at:</p>
+                <ul style="text-align: left; display: inline-block;">
+                    <li><code>POST /nl-to-sql</code> - Convert natural language to SQL</li>
+                    <li><code>POST /update-schema</code> - Update database schema</li>
+                    <li><code>GET /get-schema</code> - Get current schema</li>
+                </ul>
+            </div>
+        </body>
+        </html>
+        """
+        return HTMLResponse(content=error_html, status_code=404)
 
 @app.post("/nl-to-sql")
 def nl_to_sql(request: QueryRequest):
