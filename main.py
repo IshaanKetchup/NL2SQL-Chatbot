@@ -65,7 +65,7 @@ async def serve_spiderman():
     """
     try:
         # Read the HTML file
-        with open("htrmldud.html", "r", encoding="utf-8") as file:
+        with open("index.html", "r", encoding="utf-8") as file:
             html_content = file.read()
         return HTMLResponse(content=html_content, status_code=200)
     except FileNotFoundError:
@@ -178,3 +178,4 @@ def update_schema(req: SchemaUpdateRequest):
 @app.get("/get-schema")
 def get_schema():
     return {"schema": current_schema}
+
